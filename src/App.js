@@ -45,7 +45,8 @@ const marks = {
     toDOM: (node) => [
       'span',
       {
-        class: "knownVariable"
+        class: "knownVariable",
+        contenteditable: false,
       }
     ]
   },
@@ -59,7 +60,8 @@ const marks = {
     toDOM: (node) => [
       'span',
       {
-        class: "unknownVariable"
+        class: "unknownVariable",
+        contenteditable: false,
       }
     ]
   },
@@ -73,7 +75,8 @@ const marks = {
     toDOM: (node) => [
       'span',
       {
-        class: "backendVariable"
+        class: "backendVariable",
+        contenteditable: false,
       }
     ]
   },
