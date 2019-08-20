@@ -1,0 +1,27 @@
+.knownVariable {
+  background-color: #4c76e0; /* cobaltBlue */
+  color: #f5f5f7; /* whiteSmoke */
+  font-weight: 400;
+  border-radius: 12px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.unknownVariable {
+  background-color: #e66a5b; /* errorText */
+  color: #f5f5f7; /* whiteSmoke */
+  font-weight: 400;
+  border-radius: 12px;
+  text-align: center;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.backendVariable {
+  background-color: #778692; /* hintText */
+  color: #f5f5f7; /* whiteSmoke */
+  font-weight: 400;
+  border-radius: 12px;
+  text-align: center;
+  white-space: nowrap;
+}
