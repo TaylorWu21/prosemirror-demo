@@ -1,14 +1,9 @@
 import React from 'react';
 import {
   EditorState,
-  NodeSelection,
-  Selection,
-  TextSelection,
-  SelectionRange
 } from "prosemirror-state"
 import {EditorView} from "prosemirror-view"
 import {Schema, DOMParser} from "prosemirror-model"
-import {schema} from "prosemirror-schema-basic"
 import {dropCursor} from "prosemirror-dropcursor"
 import {gapCursor} from "prosemirror-gapcursor"
 import {
@@ -19,14 +14,11 @@ import {keymap} from "prosemirror-keymap"
 import {history} from "prosemirror-history"
 import {baseKeymap} from "prosemirror-commands"
 import { buildKeymap } from './keymaps';
-import _ from 'lodash';
 
 import './app.css';
 
 const pDOM = ["p", 0];
 const brDOM = ["br"];
-const spanDOM = ["span", 0];
-const strongDOM = ["strong", 0];
 
 const nodes = {
   // :: NodeSpec The top level document node.
@@ -45,7 +37,7 @@ const nodes = {
 
   // :: NodeSpec The text node.
   text: {
-    group: "inline"
+    group: "inline",
   },
 
   // :: NodeSpec A hard line break, represented in the DOM as `<br>`.
@@ -99,46 +91,37 @@ const marks = {
       }
     ]
   },
-
-  strong: {
-    parseDOM: [{tag: "strong"},
-               // This works around a Google Docs misbehavior where
-               // pasted content will be inexplicably wrapped in `<b>`
-               // tags with a font-weight normal.
-               {tag: "b", getAttrs: node => node.style.fontWeight != "normal" && null},
-               {style: "font-weight", getAttrs: value => /^(bold(er)?|[5-9]\d{2,})$/.test(value) && null}],
-    toDOM() { return strongDOM }
-  },
 }
 
 const plugins = (options) => {
   const variableRule = new InputRule(
     /:(\w+):/,
     (state, match, start, end) => {
-      const transaction = state.tr;
       const mark = state.config.schema.marks.knownVariable.instance;
-      const { $anchor, $head } = transaction.selection;
-      const selection = TextSelection.between($anchor, $head);
-      console.log(selection, 'selection');
+      let { tr: transaction } = state;
+      const text = 'Jordan';
+
 
       transaction.addStoredMark(mark);
+      transaction.insertText('Jordan', start, start + text.length);
+      transaction.removeStoredMark(mark);
+      // transaction.insertText(' ', start + text.length + 1, start + text.length + 2);
+
+
       const newState = state.apply(transaction);
       window.view.updateState(newState);
-      const $from = state.selection.$anchor;
-
-      const node = NodeSelection.create(state.doc, start);
     }
   )
 
   const inputRulesPlugin = inputRules({ rules: [variableRule] });
 
   let plugins = [
+    inputRulesPlugin,
     keymap(buildKeymap(options.schema, options.mapKeys)),
     keymap(baseKeymap),
     dropCursor(),
     gapCursor(),
     history(),
-    inputRulesPlugin,
   ]
 
   return plugins;
@@ -147,7 +130,6 @@ const plugins = (options) => {
 class App extends React.Component {
   constructor(props) {
     super(props);
-
     this.editor = React.createRef();
     this.content = React.createRef();
 
@@ -156,17 +138,13 @@ class App extends React.Component {
       marks,
     });
 
-    // console.log(mySchema, 'mySchema');
-
     window.view = new EditorView(document.querySelector('#editor'), {
       state: EditorState.create({
         schema: mySchema,
         doc: DOMParser.fromSchema(mySchema).parse(document.querySelector('#content')),
         plugins: plugins({ schema: mySchema }),
       }),
-    })
-
-    console.log(window.view, 'view');
+    });
   }
 
   render() {
