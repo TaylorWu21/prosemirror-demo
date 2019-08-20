@@ -5,6 +5,7 @@
   border-radius: 12px;
   text-align: center;
   white-space: nowrap;
+  caret-color: black;
 }
 
 .unknownVariable {
@@ -15,6 +16,7 @@
   text-align: center;
   cursor: pointer;
   white-space: nowrap;
+  caret-color: black;
 }
 
 .backendVariable {
@@ -24,4 +26,9 @@
   border-radius: 12px;
   text-align: center;
   white-space: nowrap;
+  caret-color: black;
+}
+
+.ProseMirror {
+  border: 1px solid black;
 }
