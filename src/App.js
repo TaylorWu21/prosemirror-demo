@@ -1,6 +1,13 @@
 import React from 'react';
-import { EditorState } from "prosemirror-state"
-import { EditorView } from "prosemirror-view"
+import {
+  EditorState,
+  Plugin
+} from "prosemirror-state"
+import {
+  EditorView,
+  Decoration,
+  DecorationSet
+} from "prosemirror-view"
 import { Schema, DOMParser } from "prosemirror-model"
 import { dropCursor } from "prosemirror-dropcursor"
 import { gapCursor } from "prosemirror-gapcursor"
@@ -46,7 +53,6 @@ const marks = {
       'span',
       {
         class: "knownVariable",
-        contenteditable: false,
       }
     ]
   },
@@ -61,7 +67,6 @@ const marks = {
       'span',
       {
         class: "unknownVariable",
-        contenteditable: false,
       }
     ]
   },
@@ -76,11 +81,53 @@ const marks = {
       'span',
       {
         class: "backendVariable",
-        contenteditable: false,
       }
     ]
   },
 }
+
+class KnownVariableState {
+  constructor(knownVariables) {
+    this.knownVariables = knownVariables;
+  }
+
+  createDecoration(start, end, text) {
+    return Decoration.widget(start - 1, () => {
+      console.log(start);
+      return (<div>hi</div>);
+    });
+    // return Decoration.inline(to, from, { class: 'knownVariable' })
+  }
+
+  apply(tr) {
+    const action = tr.getMeta(variablePlugin);
+    const actionType = action && action.type;
+
+    if (!action && tr.doChanged) return this;
+    if (actionType === 'addKnownVariable') {
+      const { start, end, text } = action;
+      this.knownVariables = this.knownVariables.add(tr.doc, [this.createDecoration(start, end, text)]);
+    }
+       
+    return new KnownVariableState(this.knownVariables);
+  }
+
+  static init(config, state) {
+    const decorations = DecorationSet.create(config.doc, []);
+
+    return new KnownVariableState(decorations);
+  }
+}
+
+const variablePlugin = new Plugin({
+  state: {
+    init: KnownVariableState.init,
+    apply(tr, prev) { return prev.apply(tr) }
+  },
+  props: {
+    decorations(state) { return this.getState(state).knownVariables}
+  }
+});
 
 const plugins = (options) => {
   return [
@@ -89,6 +136,7 @@ const plugins = (options) => {
     dropCursor(),
     gapCursor(),
     history(),
+    variablePlugin,
   ];
 }
 
@@ -114,19 +162,21 @@ class App extends React.Component {
         const regex = /:(\w+):/;
         const textContent = state.doc.textContent;
         const match = textContent.match(regex);
-
+        
         if (match) {
           let { tr: transaction } = state;
-          const mark = state.config.schema.marks.knownVariable.instance;
+          // const mark = state.config.schema.marks.knownVariable.instance;
           const matchedString = match[0]
           const start = textContent.indexOf(matchedString) + 1;
           const end = start + matchedString.length;
           const text = '\xa0Podium\xa0';
 
-          transaction.delete(start, end)
-          transaction.addStoredMark(mark);
-          transaction.insertText(text, start);
+          transaction.delete(start, end);
+          transaction.setMeta(variablePlugin, { type: 'addKnownVariable', start, end, text });
 
+          //   transaction.addStoredMark(mark);
+          // transaction.insertText(text, start);
+            
           state = state.apply(transaction);
         }
 
