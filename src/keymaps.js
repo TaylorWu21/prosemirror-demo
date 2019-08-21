@@ -1,5 +1,6 @@
 import {wrapIn, setBlockType, chainCommands, toggleMark, exitCode,
         joinUp, joinDown, lift, selectParentNode} from "prosemirror-commands"
+import { Selection, NodeSelection } from 'prosemirror-state';
 import {wrapInList, splitListItem, liftListItem, sinkListItem} from "prosemirror-schema-list"
 import {undo, redo} from "prosemirror-history"
 import {undoInputRule} from "prosemirror-inputrules"
@@ -48,7 +49,25 @@ export function buildKeymap(schema, mapKeys) {
 
   bind("Mod-z", undo)
   bind("Shift-Mod-z", redo)
-  bind("Backspace", undoInputRule)
+  bind("Backspace", (state, dispatch) => {
+    const nodePosition = state.selection.$head.parentOffset;
+    const markedNode = state.doc.nodeAt(nodePosition)
+    
+    if (markedNode.marks.length > 0) {
+      const transaction = state.tr;
+      const start = nodePosition - markedNode.nodeSize;
+      const resolvedFrom = state.doc.resolve(start);
+      const resolvedTo = state.doc.resolve(markedNode.nodeSize + start + 1);
+      const setSelection = new Selection(resolvedFrom, resolvedTo);
+      transaction.setSelection(setSelection);
+      transaction.deleteSelection();
+      transaction.scrollIntoView();
+      
+      dispatch(transaction);
+    }
+
+    return undoInputRule(state, dispatch);
+  })
   if (!mac) bind("Mod-y", redo)
 
   bind("Alt-ArrowUp", joinUp)

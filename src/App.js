@@ -46,7 +46,6 @@ const marks = {
       'span',
       {
         class: "knownVariable",
-        contenteditable: false,
       }
     ]
   },
@@ -61,7 +60,6 @@ const marks = {
       'span',
       {
         class: "unknownVariable",
-        contenteditable: false,
       }
     ]
   },
@@ -76,7 +74,6 @@ const marks = {
       'span',
       {
         class: "backendVariable",
-        contenteditable: false,
       }
     ]
   },
