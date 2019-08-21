@@ -56,14 +56,14 @@ export function buildKeymap(schema, mapKeys) {
     if (markedNode.marks.length > 0) {
       const transaction = state.tr;
       const start = nodePosition - markedNode.nodeSize;
-      const resolvedFrom = state.doc.resolve(start);
-      const resolvedTo = state.doc.resolve(markedNode.nodeSize + start + 1);
+      const resolvedFrom = state.doc.resolve(start + 1);
+      const resolvedTo = state.doc.resolve(nodePosition + 1);
       const setSelection = new Selection(resolvedFrom, resolvedTo);
       transaction.setSelection(setSelection);
       transaction.deleteSelection();
-      transaction.scrollIntoView();
       
       dispatch(transaction);
+      return true;
     }
 
     return undoInputRule(state, dispatch);
