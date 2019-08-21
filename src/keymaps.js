@@ -52,7 +52,6 @@ export function buildKeymap(schema, mapKeys) {
   bind("Backspace", (state, dispatch) => {
     const nodePosition = state.selection.$head.parentOffset;
     const markedNode = state.doc.nodeAt(nodePosition)
-    
     if (markedNode.marks.length > 0) {
       const transaction = state.tr;
       const start = nodePosition - markedNode.nodeSize;
@@ -63,6 +62,10 @@ export function buildKeymap(schema, mapKeys) {
       transaction.deleteSelection();
       
       dispatch(transaction);
+
+      document.querySelector('.ProseMirror').blur();
+      window.view.focus();
+
       return true;
     }
 
