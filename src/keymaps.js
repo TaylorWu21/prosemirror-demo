@@ -63,6 +63,7 @@ export function buildKeymap(schema, mapKeys) {
       
       dispatch(transaction);
 
+      // These two lines fixes the auto cap on deleting
       document.querySelector('.ProseMirror').blur();
       window.view.focus();
 
