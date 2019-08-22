@@ -33,6 +33,7 @@ export const MESSENGER_MARKS = {
       'span',
       {
         class: "knownVariable",
+        contenteditable: false,
       }
     ]
   },
@@ -47,6 +48,7 @@ export const MESSENGER_MARKS = {
       'span',
       {
         class: "unknownVariable",
+        contenteditable: false,
       }
     ]
   },
@@ -61,6 +63,7 @@ export const MESSENGER_MARKS = {
       'span',
       {
         class: "backendVariable",
+        contenteditable: false,
       }
     ]
   },

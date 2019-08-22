@@ -1,6 +1,6 @@
 import React from 'react';
-import MessengerComposer from './components/MessengerComposer';
-import './styles/app.css';
+import MessengerComposer from 'components/MessengerComposer';
+import 'styles/app.css';
 
 class App extends React.Component {
   state = {
