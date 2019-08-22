@@ -7,77 +7,9 @@ import { gapCursor } from "prosemirror-gapcursor"
 import { keymap } from "prosemirror-keymap"
 import { history } from "prosemirror-history"
 import { baseKeymap } from "prosemirror-commands"
-import { buildKeymap } from './keymaps';
 
-import './messenger.css';
-
-const pDOM = ["p", 0];
-const brDOM = ["br"];
-
-const nodes = {
-  doc: {
-    content: "block+"
-  },
-  paragraph: {
-    content: "inline*",
-    group: "block",
-    parseDOM: [{tag: "p"}],
-    toDOM() { return pDOM }
-  },
-  text: {
-    group: "inline",
-  },
-  hard_break: {
-    inline: true,
-    group: "inline",
-    selectable: false,
-    parseDOM: [{tag: "br"}],
-    toDOM() { return brDOM }
-  }
-}
-
-const marks = {
-  knownVariable: {
-    inclusive: false,
-    parseDOM: [
-      {tag: "span"},
-    ],
-    toDOM: (node) => [
-      'span',
-      {
-        class: "knownVariable",
-      }
-    ]
-  },
-
-  unknownVariable: {
-    inclusive: false,
-    parseDOM: [
-      {tag: "span"},
-      {style: "color: red;"}
-    ],
-    toDOM: (node) => [
-      'span',
-      {
-        class: "unknownVariable",
-      }
-    ]
-  },
-
-  backendVariable: {
-    inclusive: false,
-    parseDOM: [
-      {tag: "span"},
-      {style: "color: gray;"}
-    ],
-    toDOM: (node) => [
-      'span',
-      {
-        class: "backendVariable",
-      }
-    ]
-  },
-}
+import { buildKeymap } from '../../lib/keymaps';
+import { MESSENGER_NODES, MESSENGER_MARKS } from '../../lib/prosemirrorUtils';
 
 const plugins = (options) => {
   return [
@@ -89,15 +21,15 @@ const plugins = (options) => {
   ];
 }
 
-class Messenger extends React.Component {
+class MessengerComposer extends React.Component {
   constructor(props) {
     super(props);
     this.editor = React.createRef();
     this.content = React.createRef();
 
     const mySchema = new Schema({
-      nodes,
-      marks,
+      nodes: MESSENGER_NODES,
+      marks: MESSENGER_MARKS,
     });
 
     window.view = new EditorView(document.querySelector('#editor'), {
@@ -138,7 +70,6 @@ class Messenger extends React.Component {
   }
 
   render() {
-    
     return (
       <>
       </>
@@ -146,4 +77,4 @@ class Messenger extends React.Component {
   }
 }
 
-export default Messenger;
+export default MessengerComposer;

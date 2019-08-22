@@ -25,9 +25,6 @@ import {history} from "prosemirror-history"
 import {baseKeymap} from "prosemirror-commands"
 import { buildKeymap } from './keymaps';
 import _ from 'lodash';
-// import 'style/prosemirror.css';
-
-import './teamchatMention.css';
 
 const users = [
   { name: 'Taylor Wu', mention: '@taylor.wu' },
@@ -85,7 +82,7 @@ const marks = {
   },
 }
 
-class TeamchatMention extends React.Component {
+class TeamchatComposer extends React.Component {
   constructor(props) {
     super(props);
 
@@ -209,4 +206,4 @@ class TeamchatMention extends React.Component {
   }
 }
 
-export default TeamchatMention;
+export default TeamchatComposer;

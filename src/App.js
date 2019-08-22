@@ -1,5 +1,6 @@
 import React from 'react';
-import Messenger from './Messenger';
+import MessengerComposer from './components/MessengerComposer';
+import './styles/app.css';
 
 class App extends React.Component {
   state = {
@@ -19,7 +20,7 @@ class App extends React.Component {
       contact
     } = this.state;
     return (
-      <>
+      <div>
         <input
           name='user'
           value={user}
@@ -44,10 +45,10 @@ class App extends React.Component {
           name='contact'
           onChange={this.handleChange}
         />
-        <Messenger
+        <MessengerComposer
           {...this.state}
         />
-      </>
+      </div>
     )
   }
 }

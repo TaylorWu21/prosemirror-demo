@@ -32,3 +32,9 @@
 .ProseMirror {
   border: 1px solid black;
 }
+
+.mention {
+  color: #4c76e0;
+  /* cobaltBlue */
+  font-weight: 500;
+}
