@@ -1,5 +1,8 @@
 import React from 'react';
-import { EditorState } from "prosemirror-state"
+import {
+  EditorState,
+  Selection,
+} from "prosemirror-state"
 import { EditorView } from "prosemirror-view"
 import { Schema, DOMParser } from "prosemirror-model"
 import { dropCursor } from "prosemirror-dropcursor"
@@ -55,11 +58,10 @@ class MessengerComposer extends React.Component {
           if (!variableValue) {
             console.log('bad variable');
           }
-          const text = `\xa0${variableValue}\xa0`;
 
           transaction.delete(start, end)
           transaction.addStoredMark(mark);
-          transaction.insertText(text, start);
+          transaction.insertText(variableValue, start);
 
           state = state.apply(transaction);
         }
@@ -67,6 +69,41 @@ class MessengerComposer extends React.Component {
         window.view.updateState(state);
       }
     });
+  }
+
+  componentDidUpdate(prevProps) {
+    const { contact } = this.props;
+
+    if (prevProps.contact !== contact) {
+      const {
+        doc: { textContent },
+        tr: transaction,
+        doc,
+        config
+      } = window.view.state;
+      const start = textContent.indexOf(prevProps.contact);
+      const end = start + textContent.length;
+      const resolvedFrom = doc.resolve(start + 1);
+      const resolvedTo = doc.resolve(end + 1);
+      const setSelection = new Selection(resolvedFrom, resolvedTo);
+      const markedNode = doc.nodeAt(start);
+      console.log(setSelection, 'setSelection')
+      console.log(markedNode, 'markedNode');
+      transaction.setSelection(setSelection);
+      transaction.deleteSelection();
+      transaction.insertText(contact, start);
+      const mark = config.schema.marks.knownVariable.instance;
+      transaction.addStoredMark(mark);
+
+      window.view.dispatch(transaction);
+
+      // console.log(markedNode.textContent.length)
+
+      // console.log(markedNode, 'markedNode');
+      // console.log(transaction, 'transaction');
+
+      // console.log(textContent, 'content');
+    }
   }
 
   render() {

@@ -24,25 +24,21 @@ class App extends React.Component {
         <input
           name='user'
           value={user}
-          name='user'
           onChange={this.handleChange}
         />
         <input
           name='location'
           value={location}
-          name='location'
           onChange={this.handleChange}
         />
         <input
           name='organization'
           value={organization}
-          name='organization'
           onChange={this.handleChange}
         />
         <input
           name='contact'
           value={contact}
-          name='contact'
           onChange={this.handleChange}
         />
         <MessengerComposer
