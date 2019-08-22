@@ -4,7 +4,7 @@ import {
   Selection,
 } from "prosemirror-state"
 import { EditorView } from "prosemirror-view"
-import { Fragment, Schema, DOMParser } from "prosemirror-model"
+import { Schema, DOMParser } from "prosemirror-model"
 import { dropCursor } from "prosemirror-dropcursor"
 import { gapCursor } from "prosemirror-gapcursor"
 import { keymap } from "prosemirror-keymap"
@@ -65,12 +65,12 @@ class MessengerComposer extends React.Component {
         if (match) {
           const [variables, name] = match;
           let { tr: transaction } = state;
-          const mark = state.config.schema.marks.knownVariable.instance;
           const matchedString = variables;
           let start = textContent.indexOf(matchedString) + 1;
           const end = start + matchedString.length;
           const { variable } = this.determineBlotType(variables, name);
-          const variableValue = variable.blotText;
+          const mark = this.getMark(state.config.schema.marks, variable.color);
+          const variableValue = variable.display;
           const nodeBefore = transaction.doc.nodeAt(start - 1);
           const shouldAddEmptyText = !!nodeBefore.marks.length;
 
@@ -88,6 +88,17 @@ class MessengerComposer extends React.Component {
         window.view.updateState(state);
       }
     });
+  }
+
+  getMark = (marks, color) => {
+    switch(color) {
+      case "knownVariableColor":
+        return marks.knownVariable.instance;
+      case "backendVariableColor":
+        return marks.backendVariable.instance;
+      default:
+        return marks.unknownVariable.instance;
+    }
   }
 
   componentDidUpdate(prevProps) {
@@ -113,13 +124,6 @@ class MessengerComposer extends React.Component {
       transaction.addStoredMark(mark);
 
       window.view.dispatch(transaction);
-
-      // console.log(markedNode.textContent.length)
-
-      // console.log(markedNode, 'markedNode');
-      // console.log(transaction, 'transaction');
-
-      // console.log(textContent, 'content');
     }
   }
 
@@ -130,15 +134,11 @@ class MessengerComposer extends React.Component {
     } = this.props;
 
     if (utils.hasUnsupportedVariables(variable, channelType, podiumNumber))
-      return getUnknownVariableBlot(variable, name, () =>
-        this.setMissingVariable(variable)
-      );
+      return getUnknownVariableBlot(variable, name, () => alert('onClick'));
 
     if (_.includes([CONTACT_VAR], variable)) {
       const contactName = utils.getKnownVariableInfo(variable, this.props);
-      return getContactBlot(variable, contactName, () =>
-        this.setMissingVariable(variable)
-      );
+      return getContactBlot(variable, contactName, () => alert('onClick'));
     }
 
     if (_.includes(BACKEND_CONVERTED_VARIABLES, variable))
@@ -149,9 +149,7 @@ class MessengerComposer extends React.Component {
       return getKnownVariableBlot(variableInfo, name);
     }
 
-    return getUnknownVariableBlot(variable, name, () =>
-      this.setMissingVariable(variable)
-    );
+    return getUnknownVariableBlot(variable, name, () => alert('onClick'));
   };
 
   render() {

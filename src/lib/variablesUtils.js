@@ -65,6 +65,6 @@ export const getUnknownVariableBlot = (variable, name, onClick) =>
     name,
     onClick,
     blotText: variable,
-    display: variable,
+    display: variable.replace(/:/gi, ''),
     color: UNKOWN_VARIABLE_COLOR
   });
