@@ -4,7 +4,7 @@ import {
   Selection,
 } from "prosemirror-state"
 import { EditorView } from "prosemirror-view"
-import { Schema, DOMParser } from "prosemirror-model"
+import { Fragment, Schema, DOMParser } from "prosemirror-model"
 import { dropCursor } from "prosemirror-dropcursor"
 import { gapCursor } from "prosemirror-gapcursor"
 import { keymap } from "prosemirror-keymap"
@@ -63,21 +63,25 @@ class MessengerComposer extends React.Component {
         const match = textContent.match(regex);
 
         if (match) {
+          const [variables, name] = match;
           let { tr: transaction } = state;
           const mark = state.config.schema.marks.knownVariable.instance;
-          const matchedString = match[0]
-          const start = textContent.indexOf(matchedString) + 1;
+          const matchedString = variables;
+          let start = textContent.indexOf(matchedString) + 1;
           const end = start + matchedString.length;
-          const variableValue = this.props[match[1]];
+          const { variable } = this.determineBlotType(variables, name);
+          const variableValue = variable.blotText;
+          const nodeBefore = transaction.doc.nodeAt(start - 1);
+          const shouldAddEmptyText = !!nodeBefore.marks.length;
 
-          if (!variableValue) {
-            console.log('bad variable');
+          transaction.delete(start, end);
+          if (shouldAddEmptyText) {
+            transaction.insertText(' ', start);
+            start = start + 1;
           }
-
-          transaction.delete(start, end)
           transaction.addStoredMark(mark);
           transaction.insertText(variableValue, start);
-
+          
           state = state.apply(transaction);
         }
 
@@ -102,8 +106,6 @@ class MessengerComposer extends React.Component {
       const resolvedTo = doc.resolve(end + 1);
       const setSelection = new Selection(resolvedFrom, resolvedTo);
       const markedNode = doc.nodeAt(start);
-      console.log(setSelection, 'setSelection')
-      console.log(markedNode, 'markedNode');
       transaction.setSelection(setSelection);
       transaction.deleteSelection();
       transaction.insertText(contact, start);

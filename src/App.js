@@ -4,41 +4,30 @@ import 'styles/app.css';
 
 class App extends React.Component {
   state = {
-    user: 'Taylor',
-    location: 'Paul Blanco',
-    organization: 'Toyota',
-    contact: 'Billy'
+    channelType: 'phone',
+    currentLocation: {
+      name: 'Podium in Lehi',
+      organizationName: 'Podium',
+      podiumNumber: '+13852172459',
+    },
+    currentUser: {
+      firstName: 'John',
+      lastName: 'Snow',
+    },
+    parsedContactName: 'John Snow'
   }
 
-  handleChange = ({ target: { name, value } }) => this.setState({ [name]: value });
+  handleChange = ({ target: { value } }) => this.setState({ parsedContactName: value });
 
   render() {
     const {
-      user,
-      location,
-      organization,
-      contact
+      parsedContactName
     } = this.state;
     return (
       <div>
         <input
-          name='user'
-          value={user}
-          onChange={this.handleChange}
-        />
-        <input
-          name='location'
-          value={location}
-          onChange={this.handleChange}
-        />
-        <input
-          name='organization'
-          value={organization}
-          onChange={this.handleChange}
-        />
-        <input
           name='contact'
-          value={contact}
+          value={parsedContactName}
           onChange={this.handleChange}
         />
         <MessengerComposer
