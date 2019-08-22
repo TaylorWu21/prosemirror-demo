@@ -25,7 +25,7 @@ export const VARIABLE_HUMAN_NAMES = {
   [LOCATION_VAR]: 'Location',
   [ORGANIZATION_VAR]: 'Organization',
   [PACKAGE_DELIVERY_VAR]: 'Package Delivery',
-  [REVIEW_INVITATION_EN_VAR]: 'Review Invitation - EN', // TODO: Why do we have EN and a normal Review_Invitation one too?
+  [REVIEW_INVITATION_EN_VAR]: 'Review Invitation - EN',
   [REVIEW_INVITATION_ES_VAR]: 'Review Invitation - ES',
   [REVIEW_INVITATION_FR_VAR]: 'Review Invitation - FR',
   [REVIEW_INVITATION_VAR]: 'Review Invitation',

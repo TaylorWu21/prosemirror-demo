@@ -7,9 +7,24 @@ import { gapCursor } from "prosemirror-gapcursor"
 import { keymap } from "prosemirror-keymap"
 import { history } from "prosemirror-history"
 import { baseKeymap } from "prosemirror-commands"
+import _ from 'lodash';
 
-import { buildKeymap } from '../../lib/keymaps';
-import { MESSENGER_NODES, MESSENGER_MARKS } from '../../lib/prosemirrorUtils';
+import { buildKeymap } from 'lib/keymaps';
+import { MESSENGER_NODES, MESSENGER_MARKS } from 'lib/prosemirrorUtils';
+import {
+  getBackendSupportedBlot,
+  getContactBlot,
+  getKnownVariableBlot,
+  getUnknownVariableBlot,
+} from 'lib/variablesUtils';
+import * as utils from 'lib/MessageComposerUtils';
+import {
+  BACKEND_CONVERTED_VARIABLES,
+  CONTACT_VAR,
+  LOCATION_VAR,
+  ORGANIZATION_VAR,
+  USER_VAR,
+} from 'lib/supportedVariables';
 
 const plugins = (options) => {
   return [
@@ -68,6 +83,37 @@ class MessengerComposer extends React.Component {
       }
     });
   }
+
+  determineBlotType = (variable, name) => {
+    const {
+      channelType,
+      currentLocation: { podiumNumber }
+    } = this.props;
+
+    if (utils.hasUnsupportedVariables(variable, channelType, podiumNumber))
+      return getUnknownVariableBlot(variable, name, () =>
+        this.setMissingVariable(variable)
+      );
+
+    if (_.includes([CONTACT_VAR], variable)) {
+      const contactName = utils.getKnownVariableInfo(variable, this.props);
+      return getContactBlot(variable, contactName, () =>
+        this.setMissingVariable(variable)
+      );
+    }
+
+    if (_.includes(BACKEND_CONVERTED_VARIABLES, variable))
+      return getBackendSupportedBlot(variable, name);
+
+    if (_.includes([LOCATION_VAR, ORGANIZATION_VAR, USER_VAR], variable)) {
+      const variableInfo = utils.getKnownVariableInfo(variable, this.props);
+      return getKnownVariableBlot(variableInfo, name);
+    }
+
+    return getUnknownVariableBlot(variable, name, () =>
+      this.setMissingVariable(variable)
+    );
+  };
 
   render() {
     return (
