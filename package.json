@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "libphonenumber-js": "^1.7.22",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "moment-timezone": "^0.5.26",
     "prosemirror-commands": "^1.0.8",
     "prosemirror-dropcursor": "^1.1.1",
